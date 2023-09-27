@@ -1,0 +1,24 @@
+.inputMessage {
+  display: flex;
+  justify-content: space-between;
+  justify-items: center;
+  position: absolute;
+  width: 100%;
+  bottom: 0px;
+  border-top: 1px solid grey;
+
+  input {
+    height: 40px;
+    flex-grow: 1;
+    padding: 2em 1em;
+    font-size: large;
+    outline: none;
+    border: none;
+  }
+
+  button {
+    font-size: larger;
+    width: 100px;
+    cursor: pointer;
+  }
+}
