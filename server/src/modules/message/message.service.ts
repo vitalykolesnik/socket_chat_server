@@ -1,4 +1,3 @@
-import { UserEntity } from '@app/modules/user/entity/user.entity';
 import { Repository } from 'typeorm';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
