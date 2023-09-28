@@ -23,9 +23,6 @@ export class MessageService {
     limit?: number,
     page?: number,
   ): Promise<MessagesResponseInterface> {
-    // const [messages, count] = await this.messageRepository.findAndCount({
-    //   relations: { from: true },
-    // });
     const customQuery = this.messageRepository.createQueryBuilder('message');
     if (limit) customQuery.take(limit);
     if (page) customQuery.skip(page * limit);

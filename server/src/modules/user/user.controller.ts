@@ -27,12 +27,6 @@ import { LoginUserRequestDTO } from '@app/modules/user/dto/loginUserRequest.dto'
 import { UpdateUserRequestDTO } from '@app/modules/user/dto/updateUserRequest.dto';
 
 @ApiTags('user')
-// @UsePipes(
-//   new ValidationPipe({
-//     whitelist: true,
-//     forbidNonWhitelisted: true,
-//   }),
-// )
 @Controller()
 export class UserController {
   constructor(private readonly userService: UserService) {}
@@ -76,16 +70,17 @@ export class UserController {
   @Get('users')
   @ApiQuery({ name: 'limit', required: false, example: 10 })
   @ApiQuery({ name: 'page', required: false, example: 1 })
+  @ApiQuery({ name: 'userName', required: false, example: 'tom' })
   async getAllUsers(
-    // @Query('name') userName?: string,
+    @Query('name') userName?: string,
     @Query('limit', new DefaultValuePipe(10)) limit?: number,
     @Query('page', new DefaultValuePipe(1)) page?: number,
   ): Promise<UsersResponseInterface> {
-    return await this.userService.getAllUsers(limit, page - 1);
+    return await this.userService.getAllUsers(userName, limit, page - 1);
   }
 
   @Get('user/:id')
-  async getOneUser(@Param('id') id: string): Promise<UserEntity> {
+  async getById(@Param('id') id: string): Promise<UserEntity> {
     return await this.userService.findById(id);
   }
 

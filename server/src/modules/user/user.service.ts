@@ -38,7 +38,6 @@ export class UserService {
     const userByEmail = await this.userRepository.findOne({
       where: { email: loginUserDTO.email },
       select: ['id', 'email', 'password'],
-      // select: ['id', 'username', 'bio', 'image', 'email', 'password'],
     });
     if (!userByEmail) {
       throw new UnprocessableEntityException('Email or password are not valid');
@@ -68,11 +67,12 @@ export class UserService {
   }
 
   async getAllUsers(
+    userName?: string,
     limit?: number,
     page?: number,
   ): Promise<UsersResponseInterface> {
     const customQuery = this.userRepository.createQueryBuilder('user');
-    // if (userName) customQuery.where(`user.userName LIKE '%${userName}%'`);
+    if (userName) customQuery.where(`user.userName LIKE '%${userName}%'`);
     if (limit) customQuery.take(limit);
     if (page) customQuery.skip(page * limit);
     customQuery.orderBy('user.id');
