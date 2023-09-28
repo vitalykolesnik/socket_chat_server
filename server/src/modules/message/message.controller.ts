@@ -1,15 +1,6 @@
 import { MessagesResponseInterface } from '@app/modules/message/types/message.type';
-import { JWTGuard } from '@app/guards/jwt.guard';
-import {
-  Body,
-  Controller,
-  DefaultValuePipe,
-  Get,
-  Optional,
-  Query,
-  UseGuards,
-} from '@nestjs/common';
-import { ApiBearerAuth, ApiQuery, ApiTags } from '@nestjs/swagger';
+import { Body, Controller, DefaultValuePipe, Get, Query } from '@nestjs/common';
+import { ApiQuery, ApiTags } from '@nestjs/swagger';
 import { MessageService } from '@app/modules/message/message.service';
 
 @ApiTags('message')

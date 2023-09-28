@@ -3,7 +3,6 @@ import { JWTSocketGuard } from '@app/guards/jwtSocket.guard';
 import { UseGuards } from '@nestjs/common';
 import {
   ConnectedSocket,
-  OnGatewayConnection,
   OnGatewayDisconnect,
   SubscribeMessage,
   WebSocketGateway,

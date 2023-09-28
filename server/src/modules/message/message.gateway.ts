@@ -5,7 +5,6 @@ import {
   SubscribeMessage,
   WebSocketGateway,
 } from '@nestjs/websockets';
-import { UserEntity } from '@app/modules/user/entity/user.entity';
 import { UserService } from '@app/modules/user/user.service';
 import { CustomSocketInterface } from '@app/types/customSocket.interface';
 import { Client } from '@app/decorators/client.decorator';
