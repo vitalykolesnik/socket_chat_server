@@ -2,11 +2,11 @@ import {
   BrowserRouter,
   Route,
   Routes,
+  Navigate,
 } from "react-router-dom";
 import Login from "components/Login";
 import Register from "components/Register";
 import Home from "components/Home";
-import Error from "components/Error";
 import { RequireAuth } from "hoc/RequireAuth";
 import { AutoLogin } from "hoc/AutoLogin";
 import { TokenProvider } from "context/TokenContext";
@@ -43,7 +43,10 @@ export const App = () => {
               </AutoLogin>
             }
           />
-          <Route path="*" element={<Error />} />
+          <Route
+            path="*"
+            element={<Navigate to={"/chat"} />}
+          />
         </Routes>
       </BrowserRouter>
     </TokenProvider>
