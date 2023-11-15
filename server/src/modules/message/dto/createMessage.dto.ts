@@ -1,21 +1,17 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty } from 'class-validator';
-import { UserEntity } from '@app/modules/user/entity/user.entity';
+import { IsNotEmpty, IsOptional } from 'class-validator';
+import { User } from '@app/modules/user/entities/user.entity';
 
 export class CreateMessageDTO {
-  @ApiProperty()
-  @IsNotEmpty()
-  readonly id: string;
-
-  @ApiProperty()
-  @IsNotEmpty()
-  to: UserEntity;
-
   @ApiProperty()
   @IsNotEmpty()
   readonly text: string;
 
   @ApiProperty()
-  @IsNotEmpty()
-  from: UserEntity;
+  @IsOptional()
+  from: User;
+
+  @ApiProperty()
+  @IsOptional()
+  to: string;
 }

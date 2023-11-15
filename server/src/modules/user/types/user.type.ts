@@ -1,6 +1,6 @@
-import { UserEntity } from '@app/modules/user/entity/user.entity';
+import { User } from '@app/modules/user/entities/user.entity';
 
-export type UserType = Omit<UserEntity, 'hashPassword'>;
+export type UserType = Omit<User, 'hashPassword'>;
 
 export interface UserResponseInterface {
   user: UserType & { token: string };

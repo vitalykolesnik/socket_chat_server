@@ -1,3 +1,4 @@
+import { UserInfo } from '@app/modules/userInfo/entity/userInfo.entity';
 import {
   BadRequestException,
   Injectable,
@@ -9,20 +10,22 @@ import { sign } from 'jsonwebtoken';
 import { compare } from 'bcrypt';
 import { UserResponseInterface } from '@app/modules/user/types/user.type';
 import { UsersResponseInterface } from '@app/modules/user/types/user.type';
-import { UserEntity } from '@app/modules/user/entity/user.entity';
+import { User } from '@app/modules/user/entities/user.entity';
 import { CreateUserDTO } from '@app/modules/user/dto/createUser.dto';
 import { UpdateUserDTO } from '@app/modules/user/dto/updateUser.dto';
 import { LoginUserDTO } from '@app/modules/user/dto/loginUser.dto';
+import { FollowUserDTO } from '@app/modules/user/dto/followUser.dto';
 
 @Injectable()
 export class UserService {
   constructor(
-    @InjectRepository(UserEntity)
-    private readonly userRepository: Repository<UserEntity>,
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
   ) {}
 
-  async createUser(createUserDTO: CreateUserDTO): Promise<UserEntity> {
+  async createUser(createUserDTO: CreateUserDTO): Promise<User> {
     const userByEmail = await this.userRepository.findOne({
+      select: ['id', 'email', 'password'],
       where: { email: createUserDTO.email },
     });
     if (userByEmail) {
@@ -34,10 +37,11 @@ export class UserService {
     return newUser;
   }
 
-  async loginUser(loginUserDTO: LoginUserDTO): Promise<UserEntity> {
+  async loginUser(loginUserDTO: LoginUserDTO): Promise<User> {
     const userByEmail = await this.userRepository.findOne({
-      where: { email: loginUserDTO.email },
       select: ['id', 'email', 'password'],
+      where: { email: loginUserDTO.email },
+      relations: { info: true },
     });
     if (!userByEmail) {
       throw new UnprocessableEntityException('Email or password are not valid');
@@ -53,46 +57,63 @@ export class UserService {
     return userByEmail;
   }
 
-  async updateUser(
-    id: string,
-    updateUserDTO: UpdateUserDTO,
-  ): Promise<UserEntity> {
+  async updateUser(user: User, updateUserDTO: UpdateUserDTO): Promise<User> {
     try {
-      const userById = await this.findById(id);
-      Object.assign(userById, updateUserDTO);
-      return await this.userRepository.save(userById);
+      await this.userRepository.update(user.id, updateUserDTO);
+      return await this.findOneBy('id', user.id);
     } catch (err) {
       throw new BadRequestException();
     }
   }
 
   async getAllUsers(
-    userName?: string,
     limit?: number,
     page?: number,
   ): Promise<UsersResponseInterface> {
-    const customQuery = this.userRepository.createQueryBuilder('user');
-    if (userName) customQuery.where(`user.userName LIKE '%${userName}%'`);
+    const customQuery = this.userRepository.createQueryBuilder('u');
     if (limit) customQuery.take(limit);
     if (page) customQuery.skip(page * limit);
-    customQuery.orderBy('user.id');
+    customQuery.leftJoinAndSelect('u.info', 'i');
+    customQuery.leftJoinAndSelect('u.friends', 'f');
+    customQuery.orderBy('u.email');
     const [users, count] = await customQuery.getManyAndCount();
     return { users, count };
   }
 
-  findById(id: string): Promise<UserEntity> {
-    return this.userRepository.findOne({
-      where: { id },
-    });
+  async findOneBy(field: keyof User, value: string): Promise<User> {
+    try {
+      const customQuery = this.userRepository.createQueryBuilder('u');
+      customQuery.where(`u.${field} = :value`, { value });
+      customQuery.leftJoinAndSelect('u.info', 'i');
+      customQuery.leftJoinAndSelect('u.friends', 'f');
+      customQuery.leftJoinAndSelect('f.info', 'fi');
+      return await customQuery.getOneOrFail();
+    } catch (err) {
+      throw new BadRequestException(err.message);
+    }
   }
 
-  findBySocketId(socketId: string): Promise<UserEntity> {
-    return this.userRepository.findOne({
-      where: { socketId },
-    });
+  async toggleFollowUser(user: User, friendId: string): Promise<User> {
+    try {
+      if (friendId === user.id) throw new Error("You can't follow yourself");
+      const friend = await this.findOneBy('id', friendId);
+      const isFollow = user.friends.some((f) => f.id === friendId);
+
+      if (isFollow) {
+        user.friends = user.friends.filter((f) => {
+          return f.id !== friendId;
+        });
+      } else {
+        user.friends = [...user.friends, friend];
+      }
+      const updatedUser = await this.userRepository.save(user);
+      return updatedUser;
+    } catch (err) {
+      throw new BadRequestException(err.message);
+    }
   }
 
-  buildUserResponse(user: UserEntity): UserResponseInterface {
+  buildUserResponse(user: User): UserResponseInterface {
     return {
       user: {
         ...user,
@@ -101,7 +122,7 @@ export class UserService {
     };
   }
 
-  generateJwt(user: UserEntity): string {
+  generateJwt(user: User): string {
     return sign(
       {
         id: user.id,

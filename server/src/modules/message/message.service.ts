@@ -1,21 +1,25 @@
 import { Repository } from 'typeorm';
-import { Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { MessageEntity } from '@app/modules/message/entity/message.entity';
-import { MessagesResponseInterface } from '@app/modules/message/types/message.type';
-import { CreateMessageDTO } from '@app/modules/message/dto/createMessage.dto';
+import { Message } from '@app/modules/message/entities/message.entity';
+import {
+  MessageCreaterDTO,
+  MessagesResponseInterface,
+} from '@app/modules/message/types/message.type';
 
 @Injectable()
 export class MessageService {
   constructor(
-    @InjectRepository(MessageEntity)
-    private readonly messageRepository: Repository<MessageEntity>,
+    @InjectRepository(Message)
+    private readonly messageRepository: Repository<Message>,
   ) {}
 
-  async createMessage(
-    createMessageDTO: CreateMessageDTO,
-  ): Promise<MessageEntity> {
-    const message = this.messageRepository.create(createMessageDTO);
+  async createMessage(createMessage: MessageCreaterDTO): Promise<Message> {
+    const message = this.messageRepository.create(createMessage);
     return await this.messageRepository.save(message);
   }
 
@@ -23,23 +27,37 @@ export class MessageService {
     limit?: number,
     page?: number,
   ): Promise<MessagesResponseInterface> {
-    const customQuery = this.messageRepository.createQueryBuilder('message');
+    const customQuery = this.messageRepository.createQueryBuilder('m');
+    customQuery.leftJoinAndSelect('m.from', 'f');
+    customQuery.leftJoinAndSelect('m.to', 't');
+    customQuery.leftJoinAndSelect('m.comments', 'c');
+    // customQuery.leftJoinAndSelect('message.conversation', 'conv');
     if (limit) customQuery.take(limit);
     if (page) customQuery.skip(page * limit);
-    customQuery.leftJoinAndSelect('message.from', 'userFrom');
-    customQuery.leftJoinAndSelect('message.to', 'userTo');
     customQuery.orderBy('message.createdAt');
     const [messages, count] = await customQuery.getManyAndCount();
     return { messages, count };
   }
 
-  async deleteMessage(clientId: string, id: string) {
+  async findOne(id: string): Promise<Message> {
     const message = await this.messageRepository.findOne({
       where: { id },
-      relations: { from: true },
+      relations: { from: true, to: true, comments: true },
     });
-    if (message.from.id === clientId) {
+    return message;
+  }
+
+  async deleteMessage(userId: string, id: string) {
+    try {
+      const message = await this.findOne(id);
+      if (!message)
+        throw new BadRequestException(`Not found message with id: ${id}`);
+      if (message.from.id !== userId)
+        throw new UnauthorizedException('Only creator can delete the message');
       await this.messageRepository.delete({ id });
+      return { id };
+    } catch (err) {
+      throw new BadRequestException(err.message);
     }
   }
 }

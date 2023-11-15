@@ -3,26 +3,12 @@ import { IsEmail, IsOptional, IsString } from 'class-validator';
 
 export class UpdateUserDTO {
   @ApiPropertyOptional({ example: 'jerry@gmail.com' })
-  @IsEmail()
   @IsOptional()
+  @IsEmail()
   readonly email: string;
 
+  @ApiPropertyOptional()
   @IsString()
   @IsOptional()
   readonly socketId: string;
-
-  // @ApiPropertyOptional()
-  // @IsString()
-  // @IsOptional()
-  // readonly username: string;
-
-  // @ApiPropertyOptional()
-  // @IsString()
-  // @IsOptional()
-  // readonly bio: string;
-
-  // @ApiPropertyOptional()
-  // @IsString()
-  // @IsOptional()
-  // readonly image: string;
 }

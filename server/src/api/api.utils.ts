@@ -7,7 +7,10 @@ export const createDocumentation = (path: string, app: INestApplication) => {
     .setDescription('The Blog_NestJS API description')
     .setVersion('1.0.0')
     .addTag('user')
+    .addTag('info')
+    .addTag('conversation')
     .addTag('message')
+    .addTag('comment')
     .addBearerAuth(
       {
         description: 'JWT Authorization',

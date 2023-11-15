@@ -12,8 +12,8 @@ export class JWTSocketGuard implements CanActivate {
 
   async canActivate(context: ExecutionContext) {
     const client = context.switchToWs().getClient();
-    const user = await this.userService.findById(client.user.id);
-    if (!user) throw new UnauthorizedException('User not authorised!');
+    if (!client.user) throw new UnauthorizedException('User not authorised!');
+    client.user = await this.userService.findOneBy('id', client.user.id);
     return true;
   }
 }

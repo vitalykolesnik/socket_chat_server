@@ -1,4 +1,4 @@
-import { UserEntity } from '@app/modules/user/entity/user.entity';
+import { User } from '@app/modules/user/entities/user.entity';
 import { CustomSocketInterface } from '@app/types/customSocket.interface';
 import { UnauthorizedException } from '@nestjs/common';
 import { NextFunction } from 'express';
@@ -10,23 +10,11 @@ export const authSocketMiddleware = () => {
     if (token) {
       try {
         const decoded = verify(token, process.env.JWT_SECRET);
-        socket.user = decoded as UserEntity;
+        socket.user = decoded as User;
         next();
       } catch (error) {
         next(new UnauthorizedException('Not valid token'));
       }
-      // verify(
-      //   socket.handshake.auth.token as string,
-      //   process.env.JWT_SECRET,
-      //   (err, decoded) => {
-      //     if (err) {
-      //       next(new UnauthorizedException('Not valid token'));
-      //     } else {
-      //       socket.user = decoded as UserEntity;
-      //       next();
-      //     }
-      //   },
-      // );
     } else {
       next(new UnauthorizedException('Auth error'));
     }

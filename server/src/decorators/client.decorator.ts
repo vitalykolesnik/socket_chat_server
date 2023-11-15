@@ -1,7 +1,7 @@
 import { createParamDecorator, ExecutionContext } from '@nestjs/common';
 import { CustomSocketInterface } from '@app/types/customSocket.interface';
 
-export const Client = createParamDecorator(
+export const CurrentClient = createParamDecorator(
   (data: string, ctx: ExecutionContext) => {
     const context = ctx.switchToWs();
     const client = context.getClient<CustomSocketInterface>();

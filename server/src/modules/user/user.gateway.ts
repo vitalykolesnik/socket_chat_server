@@ -1,3 +1,4 @@
+import { User } from './entities/user.entity';
 import { UserService } from '@app/modules/user/user.service';
 import { JWTSocketGuard } from '@app/guards/jwtSocket.guard';
 import { UseGuards } from '@nestjs/common';
@@ -8,7 +9,7 @@ import {
   WebSocketGateway,
 } from '@nestjs/websockets';
 import { CustomSocketInterface } from '@app/types/customSocket.interface';
-import { Client } from '@app/decorators/client.decorator';
+import { CurrentClient } from '@app/decorators/client.decorator';
 
 @UseGuards(JWTSocketGuard)
 @WebSocketGateway()
@@ -22,10 +23,9 @@ export class UserGateway implements OnGatewayDisconnect {
   @SubscribeMessage('user/login')
   async login(
     @ConnectedSocket() socket: CustomSocketInterface,
-    @Client('id') id: string,
+    @CurrentClient() user: User,
   ) {
-    const user = await this.userService.findById(id);
-    const updatedUser = await this.userService.updateUser(user.id, {
+    const updatedUser = await this.userService.updateUser(user, {
       email: user.email,
       socketId: socket.id,
     });
@@ -35,21 +35,20 @@ export class UserGateway implements OnGatewayDisconnect {
   @SubscribeMessage('disconnecting')
   async disconnecting(
     @ConnectedSocket() socket: CustomSocketInterface,
-    @Client('id') id: string,
+    @CurrentClient() user: User,
   ) {
-    const user = await this.userService.findById(id);
-    await this.userService.updateUser(user.id, {
+    await this.userService.updateUser(user, {
       email: user.email,
       socketId: null,
     });
     socket.broadcast.emit('user/disconnect');
   }
 
-  @SubscribeMessage('users/update')
-  @SubscribeMessage('users/getAll')
+  @SubscribeMessage('user/update')
+  @SubscribeMessage('user/getAll')
   async getAllUser(@ConnectedSocket() socket: CustomSocketInterface) {
     const { users } = await this.userService.getAllUsers();
-    socket.emit('users/update-response', users);
-    socket.broadcast.emit('users/update-response', users);
+    socket.emit('user/update-response', users);
+    socket.broadcast.emit('user/update-response', users);
   }
 }

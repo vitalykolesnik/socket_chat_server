@@ -12,10 +12,10 @@ async function bootstrap() {
   const port = process.env.PORT || 4000;
 
   const app = await NestFactory.create(AppModule, {
-    cors: { origin: process.env.HTTP_CORS },
+    cors: true,
   });
   app.useWebSocketAdapter(new SocketAdapter(app));
-  createDocumentation('api', app);
+  createDocumentation('/', app);
 
   try {
     await dataSource.initialize();

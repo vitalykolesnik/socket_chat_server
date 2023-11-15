@@ -1,4 +1,4 @@
-import { UserEntity } from '@app/modules/user/entity/user.entity';
+import { UserEntity } from '@app/modules/user/entities/user.entity';
 import { Request } from 'express';
 
 export interface ExpressRequestInterface extends Request {
