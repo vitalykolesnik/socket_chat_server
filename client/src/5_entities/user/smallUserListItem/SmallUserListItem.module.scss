@@ -1,0 +1,31 @@
+@import "6_shared/colors";
+
+.user {
+  border: 2px solid white;
+  box-shadow: 1px 1px 5px black;
+  text-align: center;
+  grid-template-rows: subgrid;
+  position: relative;
+
+  img {
+    height: 100px;
+    padding: 8px;
+    object-fit: cover;
+  }
+
+  p {
+    color: grey;
+  }
+
+  .online {
+    color: white;
+  }
+
+  &:hover p {
+    color: white;
+  }
+
+  &:hover {
+    background-color: $COLOR_3;
+  }
+}

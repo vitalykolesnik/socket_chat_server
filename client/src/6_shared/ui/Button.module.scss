@@ -1,0 +1,17 @@
+@import "6_shared/colors";
+
+.button {
+  padding: 6px;
+  cursor: pointer;
+  color: white;
+  background-color: $COLOR_2;
+  border: none;
+
+  &.light {
+    background-color: $COLOR_4;
+  }
+
+  &:hover {
+    background-color: $COLOR_1;
+  }
+}

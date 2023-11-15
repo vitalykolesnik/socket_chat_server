@@ -1,0 +1,30 @@
+@import "6_shared/colors";
+
+.followerList {
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
+  gap: 10px;
+
+  .followerItem {
+    height: 50px;
+    padding: 0 10px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background-color: white;
+
+    img {
+      padding: 5px;
+      border-radius: 50%;
+      border: 2px solid black;
+      height: 80%;
+      object-fit: cover;
+    }
+
+    &:hover {
+      filter: invert(1);
+    }
+  }
+}

@@ -1,0 +1,14 @@
+@import "6_shared/colors";
+
+.userList {
+  padding: 10px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+
+  .userItem {
+    display: grid;
+    grid-template-rows: subgrid;
+    border-radius: 10px;
+  }
+}

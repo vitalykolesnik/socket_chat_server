@@ -1,0 +1,33 @@
+@import "6_shared/colors";
+
+.membersList {
+  display: flex;
+  flex-direction: row;
+  position: relative;
+  padding: 20px;
+
+  .memberItem {
+    width: 80px;
+    height: 80px;
+    background-color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50%;
+    box-shadow: 5px 5px 10px black;
+    margin-right: -40px;
+    transition: all 0.5s ease;
+
+    img {
+      object-fit: cover;
+      border: 2px solid black;
+      padding: 4px;
+      border-radius: 50%;
+    }
+
+    &:hover {
+      filter: invert(80%);
+    }
+  }
+}

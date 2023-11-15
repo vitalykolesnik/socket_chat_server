@@ -1,0 +1,41 @@
+@import "6_shared/style";
+@import "6_shared/colors";
+
+.body {
+  display: flex;
+  background-color: white;
+  overflow: hidden;
+
+  .header {
+    display: flex;
+    position: fixed;
+    width: 100vw;
+    top: 0;
+    left: 0;
+    z-index: 10;
+  }
+
+  .leftPanel {
+    flex: 1;
+    position: relative;
+    height: 100vh;
+    padding-top: 40px;
+    background-color: $COLOR_4;
+  }
+
+  .content {
+    flex: 2;
+    position: relative;
+    height: calc(100vh - 40px);
+    margin-top: 38px;
+    text-align: center;
+  }
+
+  .rightPanel {
+    flex: 1;
+    position: relative;
+    height: 100vh;
+    padding-top: 40px;
+    background-color: $COLOR_4;
+  }
+}

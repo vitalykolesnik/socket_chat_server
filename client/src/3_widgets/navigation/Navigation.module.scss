@@ -1,0 +1,23 @@
+@import "6_shared/colors";
+
+.container {
+  display: flex;
+  flex-flow: column nowrap;
+  background-color: $COLOR_4;
+
+  a {
+    padding: 8px;
+    border-bottom: 1px solid white;
+    text-decoration: none;
+    font-weight: bold;
+    color: white;
+
+    &:hover {
+      background-color: $COLOR_2;
+    }
+  }
+
+  .isActive {
+    background-color: $COLOR_3;
+  }
+}
